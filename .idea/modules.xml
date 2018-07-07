@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/WebdavSync.iml" filepath="$PROJECT_DIR$/WebdavSync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/permissiongrant/permissiongrant.iml" filepath="$PROJECT_DIR$/permissiongrant/permissiongrant.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sardine/sardine.iml" filepath="$PROJECT_DIR$/sardine/sardine.iml" />
+    </modules>
+  </component>
+</project>

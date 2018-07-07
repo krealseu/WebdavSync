@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "org.kreal.webdav.sync"
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        def targetFile = new File(outputFile.parentFile, "WebdavSync-${defaultConfig.versionName}-release.apk")
+                        targetFile.delete()
+                        outputFile.renameTo(new File(outputFile.parentFile, "WebdavSync-${defaultConfig.versionName}-release.apk"))
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation project(':permissiongrant')
+    implementation project(':sardine')
+}
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
