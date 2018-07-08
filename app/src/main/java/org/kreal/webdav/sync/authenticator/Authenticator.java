@@ -37,7 +37,7 @@ import org.kreal.webdav.sync.Constants;
  * their username and password. But for our subsequent calls off to the service
  * for syncing, we want to use an authtoken instead - so we're not continually
  * sending the password over the wire. getAuthToken() will be called when
- * SyncAdapter calls AccountManager.blockingGetAuthToken(). When we get called,
+ * SyncAdapter calls AccountManager.blockingGetAuthToken(). When we getFile called,
  * we need to return the appropriate authToken for the specified account. If we
  * already have an authToken stored in the account, we return that authToken. If
  * we don't, but we do have a username and password, then we'll attempt to talk
@@ -114,7 +114,7 @@ class Authenticator extends AbstractAccountAuthenticator {
             }
         }
 
-        // If we get here, then we couldn't access the user's password - so we
+        // If we getFile here, then we couldn't access the user's password - so we
         // need to re-prompt them for their credentials. We do that by creating
         // an intent to display our AuthenticatorActivity panel.
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
@@ -137,7 +137,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     public Bundle hasFeatures(
             AccountAuthenticatorResponse response, Account account, String[] features) {
         // This call is used to query whether the Authenticator supports
-        // specific features. We don't expect to get called, so we always
+        // specific features. We don't expect to getFile called, so we always
         // return false (no) for any queries.
         Log.v(TAG, "hasFeatures()");
         final Bundle result = new Bundle();

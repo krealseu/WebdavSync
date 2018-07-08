@@ -122,5 +122,7 @@
     </string>
 
     <string name="subtype_generic" translatable="false">%s</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
 
 </resources>

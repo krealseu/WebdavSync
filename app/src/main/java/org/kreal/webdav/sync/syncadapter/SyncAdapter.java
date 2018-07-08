@@ -55,7 +55,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private final Context mContext;
 
-    public SyncAdapter(Context context, boolean autoInitialize) {
+    SyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         mContext = context;
         mAccountManager = AccountManager.get(context);
@@ -67,7 +67,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
 
 //            see if we already have a sync - state attached to this account.By handing
-//            This value to the server, we can just get the contacts that have
+//            This value to the server, we can just getFile the contacts that have
             // been updated on the server-side since our last sync-up
             long lastSyncMarker = getServerSyncMarker(account);
 

@@ -197,7 +197,7 @@ final public class RawContact {
     /**
      * Creates and returns an instance of the RawContact from the provided JSON data.
      *
-     * @param user The JSONObject containing user data
+     * @param contact The JSONObject containing user data
      * @return user The new instance of Sample RawContact created from the JSON data.
      */
     public static RawContact valueOf(JSONObject contact) {
@@ -205,7 +205,7 @@ final public class RawContact {
         try {
             final String userName = !contact.isNull("u") ? contact.getString("u") : null;
             final int serverContactId = !contact.isNull("i") ? contact.getInt("i") : -1;
-            // If we didn't get either a username or serverId for the contact, then
+            // If we didn't getFile either a username or serverId for the contact, then
             // we can't do anything with it locally...
             if ((userName == null) && (serverContactId <= 0)) {
                 throw new JSONException("JSON contact missing required 'u' or 'i' fields");
@@ -246,8 +246,8 @@ final public class RawContact {
     /**
      * Creates and returns a User instance that represents a deleted user.
      * Since the user is deleted, all we need are the client/server IDs.
-     * @param clientUserId The client-side ID for the contact
-     * @param serverUserId The server-side ID for the contact
+     * @param rawContactId The client-side ID for the contact
+     * @param serverContactId The server-side ID for the contact
      * @return a minimal User object representing the deleted contact.
      */
     public static RawContact createDeletedContact(long rawContactId, long serverContactId)

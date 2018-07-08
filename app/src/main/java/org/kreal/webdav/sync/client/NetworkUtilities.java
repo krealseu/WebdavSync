@@ -232,7 +232,7 @@ final public class NetworkUtilities {
         try {
             Log.i(TAG, "Downloading avatar: " + avatarUrl);
             // Request the avatar image from the server, and create a bitmap
-            // object from the stream we get back.
+            // object from the stream we getFile back.
             URL url = new URL(avatarUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
@@ -243,7 +243,7 @@ final public class NetworkUtilities {
 
                 // Take the image we received from the server, whatever format it
                 // happens to be in, and convert it to a JPEG image. Note: we're
-                // not resizing the avatar - we assume that the image we get from
+                // not resizing the avatar - we assume that the image we getFile from
                 // the server is a reasonable size...
                 Log.i(TAG, "Converting avatar to JPEG");
                 ByteArrayOutputStream convertStream = new ByteArrayOutputStream(
@@ -262,7 +262,7 @@ final public class NetworkUtilities {
             Log.e(TAG, "Malformed avatar URL: " + avatarUrl);
         } catch (IOException ioex) {
             // If we're unable to download the avatar, it's a bummer but not the
-            // end of the world. We'll try to get it next time we sync.
+            // end of the world. We'll try to getFile it next time we sync.
             Log.e(TAG, "Failed to download user avatar: " + avatarUrl);
         }
         return null;

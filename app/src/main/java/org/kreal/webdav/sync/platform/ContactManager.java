@@ -407,7 +407,7 @@ public class ContactManager {
 
         // If we need to update the serverId of the contact record, take
         // care of that.  This will happen if the contact is created on the
-        // client, and then synced to the server. When we get the updated
+        // client, and then synced to the server. When we getFile the updated
         // record back from the server, we can set the SOURCE_ID property
         // on the contact, so we can (in the future) lookup contacts by
         // the serverId.
@@ -430,7 +430,7 @@ public class ContactManager {
      * When we first add a sync adapter to the system, the contacts from that
      * sync adapter will be hidden unless they're merged/grouped with an existing
      * contact.  But typically we want to actually show those contacts, so we
-     * need to mess with the Settings table to get them to show up.
+     * need to mess with the Settings table to getFile them to show up.
      *
      * @param context the Authenticator Activity context
      * @param account the Account who's visibility we're changing
@@ -756,7 +756,7 @@ public class ContactManager {
     }
 
     /**
-     * Constants for a query to get contact data for a given rawContactId
+     * Constants for a query to getFile contact data for a given rawContactId
      */
     final private static class DataQuery {
 

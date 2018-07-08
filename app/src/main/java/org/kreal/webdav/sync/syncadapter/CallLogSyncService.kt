@@ -21,13 +21,14 @@ import android.content.AbstractThreadedSyncAdapter
 import android.content.ContentProviderClient
 import android.content.Context
 import android.content.SyncResult
-import android.os.Build
 import android.os.Bundle
-import android.provider.CallLog
 import com.google.gson.Gson
-import org.kreal.webdav.sync.utils.Backup
-import org.kreal.webdav.sync.utils.WebDav
-import java.io.IOException
+import org.kreal.webdav.sync.App
+import org.kreal.webdav.sync.Constants
+import org.kreal.webdav.sync.Preference
+import org.kreal.webdav.sync.syncadapter.data.DataHelp
+import org.kreal.webdav.sync.backup.BackupManager
+import org.kreal.webdav.sync.backup.WebDavStorage
 
 
 class CallLogSyncService : AbstractSyncService() {
@@ -35,58 +36,13 @@ class CallLogSyncService : AbstractSyncService() {
 
     class CallLogSyncAdapter(mContext: Context, autoInitialize: Boolean) : AbstractThreadedSyncAdapter(mContext, autoInitialize) {
         override fun onPerformSync(account: Account, extras: Bundle, authority: String, provider: ContentProviderClient, syncResult: SyncResult) {
-            val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                arrayOf(CallLog.Calls.TYPE, CallLog.Calls.NUMBER,
-                        CallLog.Calls.DATE, CallLog.Calls.DURATION,
-                        CallLog.Calls.DATA_USAGE, CallLog.Calls.VIA_NUMBER,
-                        CallLog.Calls.NUMBER_PRESENTATION, CallLog.Calls.NUMBER_PRESENTATION,
-                        CallLog.Calls.POST_DIAL_DIGITS, CallLog.Calls.FEATURES
-
-                )
-            } else {
-                arrayOf(CallLog.Calls.TYPE, CallLog.Calls.NUMBER,
-                        CallLog.Calls.DATE, CallLog.Calls.DURATION,
-                        CallLog.Calls.DATA_USAGE, CallLog.Calls.NUMBER_PRESENTATION,
-                        CallLog.Calls.NUMBER_PRESENTATION, CallLog.Calls.FEATURES
-                )
-            }
-            val c = provider.query(CallLog.Calls.CONTENT_URI, projection, null, null, CallLog.Calls.DEFAULT_SORT_ORDER)
-            val callLogs: MutableList<CallLogInfo> = arrayListOf()
-            while (c.moveToNext()) {
-                val type = c.getInt(c.getColumnIndex(CallLog.Calls.TYPE))
-                val number = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER))
-                val date = c.getLong(c.getColumnIndex(CallLog.Calls.DATE))
-                val duration = c.getLong(c.getColumnIndex(CallLog.Calls.DURATION))
-                val dataUsage = c.getLong(c.getColumnIndex(CallLog.Calls.DATA_USAGE))
-                val viaNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) c.getString(c.getColumnIndex(CallLog.Calls.VIA_NUMBER)) else ""
-                val numberPresentation = c.getInt(c.getColumnIndex(CallLog.Calls.NUMBER_PRESENTATION))
-                val postDialDigits = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) c.getString(c.getColumnIndex(CallLog.Calls.POST_DIAL_DIGITS)) else ""
-                val features = c.getInt(c.getColumnIndex(CallLog.Calls.FEATURES))
-                callLogs.add(CallLogInfo(number, postDialDigits, viaNumber, numberPresentation, type, features, date, duration, dataUsage))
-            }
-            c.close()
             val accountManager = AccountManager.get(context)
-            try {
-                val backup = Backup(WebDav(account.name, accountManager.getPassword(account), accountManager.getUserData(account, Context.ACCOUNT_SERVICE) + "/phone"))
-                backup.backup("call", Gson().toJson(callLogs))
-            } catch (e: IOException) {
-                syncResult.stats.numIoExceptions++
-            } catch (e: Exception) {
-                syncResult.stats.numUpdates++
-            }
+            val backup = BackupManager(WebDavStorage(account.name, accountManager.getPassword(account), accountManager.getUserData(account, Constants.ACCOUNT_SERVER) + "/${App.preference.phoneName}"))
+            val callLogJson = Gson().toJson(DataHelp.loadCallLogs(context))
+            if (backup.backup("call", callLogJson))
+                App.preference.recordKeyTime(Preference.callKEY)
+            else syncResult.stats.numIoExceptions++
         }
 
     }
-
-    data class CallLogInfo(
-            val number: String,
-            val postDialDigits: String = "",
-            val viaNumber: String = "",
-            val numberPresentation: Int,
-            val callType: Int,
-            val features: Int,
-            val date: Long,
-            val duration: Long,
-            val dataUsage: Long?
-    )
 }

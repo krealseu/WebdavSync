@@ -7,7 +7,6 @@ import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
@@ -166,34 +165,28 @@ class LoginActivity : AccountAuthenticatorAppCompatActivity() {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
-            login_form.visibility = if (show) View.GONE else View.VISIBLE
-            login_form.animate()
-                    .setDuration(shortAnimTime)
-                    .alpha((if (show) 0 else 1).toFloat())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            login_form.visibility = if (show) View.GONE else View.VISIBLE
-                        }
-                    })
+        login_form.visibility = if (show) View.GONE else View.VISIBLE
+        login_form.animate()
+                .setDuration(shortAnimTime)
+                .alpha((if (show) 0 else 1).toFloat())
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        login_form.visibility = if (show) View.GONE else View.VISIBLE
+                    }
+                })
 
-            login_progress.visibility = if (show) View.VISIBLE else View.GONE
-            login_progress.animate()
-                    .setDuration(shortAnimTime)
-                    .alpha((if (show) 1 else 0).toFloat())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            login_progress.visibility = if (show) View.VISIBLE else View.GONE
-                        }
-                    })
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            login_progress.visibility = if (show) View.VISIBLE else View.GONE
-            login_form.visibility = if (show) View.GONE else View.VISIBLE
-        }
+        login_progress.visibility = if (show) View.VISIBLE else View.GONE
+        login_progress.animate()
+                .setDuration(shortAnimTime)
+                .alpha((if (show) 1 else 0).toFloat())
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        login_progress.visibility = if (show) View.VISIBLE else View.GONE
+                    }
+                })
+
     }
 
     /**
@@ -264,7 +257,7 @@ class LoginActivity : AccountAuthenticatorAppCompatActivity() {
          * authToken that's returned from the server as the 'password' for this
          * account - so we're never storing the user's actual password locally.
          *
-         * @param result the confirmCredentials result.
+         * @param authToken the confirmCredentials result.
          */
         private fun finishLogin(authToken: String) {
 
@@ -272,16 +265,19 @@ class LoginActivity : AccountAuthenticatorAppCompatActivity() {
             val account = Account(mAccount, Constants.ACCOUNT_TYPE)
             if (mRequestNewAccount) {
                 mAccountManager.addAccountExplicitly(account, mPassword, null)
-                mAccountManager.setUserData(account, Context.ACCOUNT_SERVICE, mServer)
+                mAccountManager.setUserData(account, Constants.ACCOUNT_SERVER, mServer)
                 // Set contacts sync for this account.
-                ContentResolver.addPeriodicSync(account, "org.kreal.webdav.sync.emptyprovider", Bundle.EMPTY, 3600 * 24 * 7)
-                ContentResolver.addPeriodicSync(account, CallLog.AUTHORITY, Bundle.EMPTY, 3600 * 24 * 7)
-                ContentResolver.addPeriodicSync(account, UserDictionary.AUTHORITY, Bundle.EMPTY, 3600 * 24 * 7)
-                ContentResolver.addPeriodicSync(account, "sms", Bundle.EMPTY, 3600 * 24 * 7)
-//                ContentResolver.setSyncAutomatically(account, "sms", true)
+                ContentResolver.setIsSyncable(account, CallLog.AUTHORITY, 1)
+                ContentResolver.setIsSyncable(account, UserDictionary.AUTHORITY, 1)
+                ContentResolver.setIsSyncable(account, "sms", 1)
+                ContentResolver.addPeriodicSync(account, CallLog.AUTHORITY, Bundle.EMPTY, 3600 * 24)
+                ContentResolver.addPeriodicSync(account, UserDictionary.AUTHORITY, Bundle.EMPTY, 3600 * 24)
+                ContentResolver.addPeriodicSync(account, "sms", Bundle.EMPTY, 3600 * 24)
+//                ContentResolver.addPeriodicSync(account, "org.kreal.webdav.sync.emptyprovider", Bundle.EMPTY, 3600 * 24 * 7)
+                ContentResolver.setSyncAutomatically(account, "sms", true)
             } else {
                 mAccountManager.setPassword(account, mPassword)
-                mAccountManager.setUserData(account, Context.ACCOUNT_SERVICE, mServer)
+                mAccountManager.setUserData(account, Constants.ACCOUNT_SERVER, mServer)
             }
             val intent = Intent()
             intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mAccount)
